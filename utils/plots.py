@@ -472,14 +472,14 @@ def plot_hourly_boxplot_altair(data, column, session_state=None):
 
     # Create a boxplot using Altair with x axis as the hour of the day on 24 h format and
     # y axis as the demand that is on the data[column]
-    data['fecha'] = data['fecha'].dt.strftime('%Y-%m-%dT%H:%M:%S')       
+    data['fecha'] = data['fecha'].dt.strftime('%Y-%m-%dT%H:%M:%S') 
+          
     boxplot = alt.Chart(data).mark_boxplot(median={'color': 'red'}).encode(
-        x=alt.X('hours(fecha):Q', title='Hora', axis=alt.Axis(format='%H'), sort='ascending'),
+        x=alt.X('hours(fecha):N', title='Hora', axis=alt.Axis(format='%H'), sort='ascending'),
         y=alt.Y(f'{column}:Q', title='Demanda [kW]'),
         color=alt.value('#4C72B0'),  # Set the color of the boxplot
-        # tooltip=[alt.Tooltip('hours(fecha):N', title='Hora')]  # Customize the tooltip
+        tooltip=[alt.Tooltip('hours(fecha):N', title='Hora')]  # Customize the tooltip
     )
-
     chart = (boxplot).properties(
         width=600,  # Set the width of the chart
         height=600,  # Set the height of the chart
