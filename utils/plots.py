@@ -80,7 +80,6 @@ def plot_hourly_boxplot(data, column, session_state=None):
     # Return the figure object
     return fig
 
-
 # ------------------- Boxplot of hourly energy cost -------------------
 def plot_hourly_boxplot_cost(data, column, session_state=None):
     # Set darkgrid style
@@ -473,11 +472,12 @@ def plot_hourly_boxplot_altair(data, column, session_state=None):
 
     # Create a boxplot using Altair with x axis as the hour of the day on 24 h format and
     # y axis as the demand that is on the data[column]
+    data['fecha'] = data['fecha'].dt.strftime('%Y-%m-%dT%H:%M:%S')       
     boxplot = alt.Chart(data).mark_boxplot(median={'color': 'red'}).encode(
-        x=alt.X('hours(fecha):N', title='Hora', axis=alt.Axis(format='%H')),
+        x=alt.X('hours(fecha):Q', title='Hora', axis=alt.Axis(format='%H'), sort='ascending'),
         y=alt.Y(f'{column}:Q', title='Demanda [kW]'),
         color=alt.value('#4C72B0'),  # Set the color of the boxplot
-        tooltip=[alt.Tooltip('hours(fecha):N', title='Hora')]  # Customize the tooltip
+        # tooltip=[alt.Tooltip('hours(fecha):N', title='Hora')]  # Customize the tooltip
     )
 
     chart = (boxplot).properties(
@@ -523,12 +523,12 @@ def plot_hourly_boxplot_cost_altair(data, column, session_state=None):
     # Multiply the demand by the cost of the demand
     cost = session_state.cost  # COP/kWh
     data[column] = data[column] * cost
-    
+    data['fecha'] = data['fecha'].dt.strftime('%Y-%m-%dT%H:%M:%S')       
     # Create a boxplot using Altair with x axis as the hour of the day on 24 h format and
     # y axis as the demand that is on the data[column]
     boxplot = alt.Chart(data).mark_boxplot(median={'color': 'red'}).encode(
         x=alt.X('hours(fecha):N', title='Hora', axis=alt.Axis(format='%H')),
-        y=alt.Y(f'{column}:Q', title='Costo [$/kWh]', axis=alt.Axis(format='$,.2f')),
+        y=alt.Y(f'{column}:Q', title='Costo [$/kWh]', axis=alt.Axis(format='$,.2f'),sort='ascending'),
         color=alt.value('#4C72B0'),  # Set the color of the boxplot
         tooltip=[alt.Tooltip('hours(fecha):N', title='Hora')]  # Customize the tooltip
     )
@@ -549,72 +549,6 @@ def plot_hourly_boxplot_cost_altair(data, column, session_state=None):
     )
 
     return chart  # Enable zooming and panning
-
-# ----------- weekly energy boxplot -----------
-# def plot_daily_boxplot_altair(data, column, session_state=None):
-#     # Convert 'fecha' column to datetime format
-#     data['fecha'] = pd.to_datetime(data['fecha'])
-    
-#     # Filter out rows where the specified column has NaN values
-#     data = data.dropna(subset=[column])
-
-#     if session_state and not session_state.zero_values:
-#         # Erase 0 values from the data
-#         data = data[data[column] != 0]
-
-#     # filter the data to just get the date range selected
-#     data = range_selector(data, min_date=session_state.min_date, max_date=session_state.max_date)
-
-#     # filter the data to just get the days of the week selected
-#     if session_state.days:
-#         data = data[data['fecha'].dt.dayofweek.isin(session_state.days)]
-
-#     hourly_data = data[['fecha', column]]
-#     # Set fecha as index and datetime
-#     hourly_data.set_index('fecha', inplace=True)
-#     hourly_data.index = pd.to_datetime(hourly_data.index)
-#     # Drop NaN values
-#     hourly_data.dropna(inplace=True)
-
-#     # Resample hourly data to daily sum
-#     daily_data = hourly_data.resample('D').sum()
-
-#     if session_state and not session_state.zero_values:
-#         # Erase 0 values from the data
-#         daily_data = daily_data[daily_data[column] != 0]
-
-#     # Extract day of the week from the timestamp
-#     daily_data['DayOfWeek'] = daily_data.index.dayofweek
-#     # reset index to have fecha as a column
-#     daily_data = daily_data.reset_index()
-#     print('daily_data', daily_data)
-#     boxplot = alt.Chart(daily_data).mark_boxplot(median={'color': 'red'}).encode(
-#         x = alt.X('DayOfWeek:T', title='Día de la semana', axis=alt.Axis(format='%A')),
-#         y = alt.Y(f'{column}:Q', title='Consumo [kWh/día]'),
-#         color = alt.value('#4C72B0'),  # Set the color of the boxplot
-#         tooltip = [alt.Tooltip('DayOfWeek:T', title='Día de la semana')]  # Customize the tooltip
-#     )
-
-#     chart = (boxplot).properties(
-#         width=600,  # Set the width of the chart
-#         height=600,  # Set the height of the chart
-#         title=(f'Boxplot de consumo diario {column}')  # Remove date from title
-#     ).configure_axis(
-#         labelFontSize=12,  # Set the font size of axis labels
-#         titleFontSize=14,  # Set the font size of axis titles
-#         grid=True,
-#         gridColor='#4C72B0',  # Set the color of grid lines
-#         gridOpacity=0.2  # Set the opacity of grid lines
-#     ).configure_view(
-#         strokeWidth=0,  # Remove the border of the chart
-#         fill='#FFFFFF'  # Set background color to white
-#     )
-
-#     return chart  # Enable zooming and panning    
-
-# import locale for Spanish names of the days of the week
-# import locale
-# locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 def plot_daily_boxplot_altair(data, column, session_state=None):
     # Convert 'fecha' column to datetime format

@@ -71,11 +71,11 @@ def obtener_estilo_AZURE(): #obtiene estilo desde Azure
 
 def get_connection():
     conn = psycopg2.connect(
-        host="analytics-database-datawarehousereplica-xiwpsit1c5fi.cqsoxqi3y3qy.us-east-1.rds.amazonaws.com",
-        port="5432",
-        dbname="analytics", 
-        user="powerbi", 
-        password="34321a3aeac18dbc54f7f2312d9e8366e1823147")
+        host=os.getenv("DB_HOST2"),
+        port=os.getenv("DB_PORT2"),
+        dbname=os.getenv("DB_NAME2"), 
+        user=os.getenv("DB_USER2"), 
+        password=os.getenv("DB_PASSWORD2"))
     
     return conn
 
