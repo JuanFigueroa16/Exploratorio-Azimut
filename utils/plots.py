@@ -474,20 +474,34 @@ def plot_hourly_boxplot_altair(data, column, session_state=None):
     # y axis as the demand that is on the data[column]
     data['fecha'] = data['fecha'].dt.strftime('%Y-%m-%dT%H:%M:%S') 
           
-    boxplot = alt.Chart(data).mark_boxplot(median={'color': 'red'}).encode(
+    boxplot = alt.Chart(data).mark_boxplot(size = 23,median={'color': 'red'}).encode(
         x=alt.X('hours(fecha):N', title='Hora', axis=alt.Axis(format='%H'), sort='ascending'),
         y=alt.Y(f'{column}:Q', title='Demanda [kW]'),
-        color=alt.value('#4C72B0'),  # Set the color of the boxplot
+        # stroke = alt.value('black'),  # Set thke color of the boxplot
+        # stroke=alt.condition(
+        #     alt.datum._argmax == 'q3',  # condition for the stroke color (for the box part)
+        #     alt.value('black'),         # color for the stroke
+        #     alt.value('red')            # color for the median line
+        # ),
+        strokeWidth=alt.value(1),  # Set the width of the boxplot
+        color=alt.value('#2d667a'),  # Set the color of the bars
+        opacity=alt.value(0.9),  # Set the opacity of the bars           
         tooltip=[alt.Tooltip('hours(fecha):N', title='Hora')]  # Customize the tooltip
     )
     chart = (boxplot).properties(
         width=600,  # Set the width of the chart
-        height=600,  # Set the height of the chart
+        height=400,  # Set the height of the chart
         title=(f'Boxplot de demanda de potencia {column}')  # Remove date from title
     ).configure_axis(
         labelFontSize=12,  # Set the font size of axis labels
         titleFontSize=14,  # Set the font size of axis titles
         grid=True,
+        # color of labels of x-axis and y-axis is black
+        labelColor='black',
+        # x-axis and y-axis titles are bold
+        titleFontWeight='bold',
+        # color of x-axis and y-axis titles is black
+        titleColor='black',
         gridColor='#4C72B0',  # Set the color of grid lines
         gridOpacity=0.2  # Set the opacity of grid lines
     ).configure_view(
@@ -526,16 +540,17 @@ def plot_hourly_boxplot_cost_altair(data, column, session_state=None):
     data['fecha'] = data['fecha'].dt.strftime('%Y-%m-%dT%H:%M:%S')       
     # Create a boxplot using Altair with x axis as the hour of the day on 24 h format and
     # y axis as the demand that is on the data[column]
-    boxplot = alt.Chart(data).mark_boxplot(median={'color': 'red'}).encode(
+    boxplot = alt.Chart(data).mark_boxplot(size = 23, median={'color': 'red'}).encode(
         x=alt.X('hours(fecha):N', title='Hora', axis=alt.Axis(format='%H')),
         y=alt.Y(f'{column}:Q', title='Costo [$/kWh]', axis=alt.Axis(format='$,.2f'),sort='ascending'),
-        color=alt.value('#4C72B0'),  # Set the color of the boxplot
+        color=alt.value('#2d667a'),  # Set the color of the bars
+        opacity=alt.value(0.9), # set the opacity of the bars
         tooltip=[alt.Tooltip('hours(fecha):N', title='Hora')]  # Customize the tooltip
     )
 
     chart = (boxplot).properties(
         width=600,  # Set the width of the chart
-        height=600,  # Set the height of the chart
+        height=400,  # Set the height of the chart
         title=(f'Costo horario {column}')  # Remove date from title
     ).configure_axis(
         labelFontSize=12,  # Set the font size of axis labels
@@ -604,16 +619,17 @@ def plot_daily_boxplot_altair(data, column, session_state=None):
     daily_data['fecha'] = daily_data['fecha'].dt.strftime('%Y-%m-%dT%H:%M:%S')
     print('daily_data', daily_data)
     order = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
-    boxplot = alt.Chart(daily_data).mark_boxplot(median={'color': 'red'}).encode(
+    boxplot = alt.Chart(daily_data).mark_boxplot(size = 55, median={'color': 'red'}).encode(
         x=alt.X('DayOfWeek:N', title='Día de la semana', sort=order),
         y=alt.Y(f'{column}:Q', title='Consumo [kWh/día]'),
-        color=alt.value('#4C72B0'),  # Set the color of the boxplot
+        color=alt.value('#2d667a'),  # Set the color of the bars
+        opacity=alt.value(1),  # Set the opacity of the bars
         tooltip=[alt.Tooltip('DayOfWeek:N', title='Día de la semana')]  # Customize the tooltip
     )
 
     chart = (boxplot).properties(
-        width=600,  # Set the width of the chart
-        height=600,  # Set the height of the chart
+        width=500,  # Set the width of the chart
+        height=400,  # Set the height of the chart
         title=(f'Boxplot de consumo diario {column}')  # Remove date from title
     ).configure_axis(
         labelFontSize=12,  # Set the font size of axis labels
@@ -656,7 +672,9 @@ def plot_histogram_altair(data, column, session_state=None):
         x=alt.X(f"{column}:Q", bin=alt.Bin(maxbins=10), title='Demanda [kW]'),
         y=alt.Y('sum(pct):Q', stack=None, axis=alt.Axis(format='%'), title='Frecuencia'),
         color=alt.value('#2D667A'),  # Set the color of the bars
-        opacity=alt.value(0.7)  # Set the opacity of the bars   
+        opacity=alt.value(0.9),  # Set the opacity of the bars 
+        stroke = alt.value('black'),  # Set the color of the boxplot
+        strokeWidth=alt.value(1),  # Set the width of the boxplot  
     ).properties(
         width=600,  # Set the width of the chart
         height=600,  # Set the height of the chart
@@ -704,18 +722,21 @@ def plot_diary_energy_altair(data, column, session_state=None):
     # Create an Altair chart
     bars = alt.Chart(daily_data).mark_bar().encode(
         x='fecha:T',  # Treat 'fecha' as a temporal field
-        color=alt.value('#4C72B0'),  # Set the color of the bars
+        color=alt.value('#2d667a'),  # Set the color of the bars
+        opacity=alt.value(0.9),  # Set the opacity of the bars
+        stroke = alt.value('black'),  # Set the color of the boxplot
+        strokeWidth=alt.value(0.5),  # Set the width of the boxplot
         y=alt.Y(column, title=f'Consumo [{column}] [kWh]', axis=alt.Axis(titleFontSize=14)),  # Set the y-axis title
 
     )
     # Add horizontal line for median value
     median_line = alt.Chart(pd.DataFrame({'y': [median_value]})
-                            ).mark_rule(color='red').encode(y='y')
+                            ).mark_rule(color='red').encode(y='y' )
 
     # create a layer with the bars and the median line
     chart = alt.layer(bars, median_line).resolve_scale(y='shared').properties(
         width=600,  # Set the width of the chart
-        height=600  # Set the height of the chart
+        height=400,  # Set the height of the chart
     ).configure_axis(
         labelFontSize=12,  # Set the font size of axis labels
         titleFontSize=14,  # Set the font size of axis titles
@@ -776,7 +797,7 @@ def plot_power_profile_daily_altair(data, column, session_state=None):
     # Create a layer with the line chart and the median line
     chart = alt.layer(line_chart, median_chart).properties(
         width=600,  # Set the width of the chart
-        height=600,  # Set the height of the chart
+        height=400,  # Set the height of the chart
         title=(f'Perfil de potencia diario {column}')  # Set the title of the chart
     ).configure_axis(
         labelFontSize=12,  # Set the font size of axis labels
