@@ -474,15 +474,13 @@ def plot_hourly_boxplot_altair(data, column, session_state=None):
     # y axis as the demand that is on the data[column]
     data['fecha'] = data['fecha'].dt.strftime('%Y-%m-%dT%H:%M:%S') 
           
-    boxplot = alt.Chart(data).mark_boxplot(size = 23,median={'color': 'red'}).encode(
+    boxplot = alt.Chart(data).mark_boxplot(
+        size = 23, 
+        box={'stroke': 'black'},  # Could have used MarkConfig instead
+        median=alt.MarkConfig(stroke='red'),  # Could have used a dict instead
+    ).encode(
         x=alt.X('hours(fecha):N', title='Hora', axis=alt.Axis(format='%H'), sort='ascending'),
         y=alt.Y(f'{column}:Q', title='Demanda [kW]'),
-        # stroke = alt.value('black'),  # Set thke color of the boxplot
-        # stroke=alt.condition(
-        #     alt.datum._argmax == 'q3',  # condition for the stroke color (for the box part)
-        #     alt.value('black'),         # color for the stroke
-        #     alt.value('red')            # color for the median line
-        # ),
         strokeWidth=alt.value(1),  # Set the width of the boxplot
         color=alt.value('#2d667a'),  # Set the color of the bars
         opacity=alt.value(0.9),  # Set the opacity of the bars           
@@ -540,7 +538,11 @@ def plot_hourly_boxplot_cost_altair(data, column, session_state=None):
     data['fecha'] = data['fecha'].dt.strftime('%Y-%m-%dT%H:%M:%S')       
     # Create a boxplot using Altair with x axis as the hour of the day on 24 h format and
     # y axis as the demand that is on the data[column]
-    boxplot = alt.Chart(data).mark_boxplot(size = 23, median={'color': 'red'}).encode(
+    boxplot = alt.Chart(data).mark_boxplot(
+        size = 23, 
+        box={'stroke': 'black'},  # Could have used MarkConfig instead
+        median=alt.MarkConfig(stroke='red'),  # Could have used a dict instead
+    ).encode(
         x=alt.X('hours(fecha):N', title='Hora', axis=alt.Axis(format='%H')),
         y=alt.Y(f'{column}:Q', title='Costo [$/kWh]', axis=alt.Axis(format='$,.2f'),sort='ascending'),
         color=alt.value('#2d667a'),  # Set the color of the bars
@@ -619,11 +621,15 @@ def plot_daily_boxplot_altair(data, column, session_state=None):
     daily_data['fecha'] = daily_data['fecha'].dt.strftime('%Y-%m-%dT%H:%M:%S')
     print('daily_data', daily_data)
     order = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
-    boxplot = alt.Chart(daily_data).mark_boxplot(size = 55, median={'color': 'red'}).encode(
+    boxplot = alt.Chart(daily_data).mark_boxplot(
+        size = 55, 
+        box={'stroke': 'black'},  # Could have used MarkConfig instead
+        median=alt.MarkConfig(stroke='red'),  # Could have used a dict instead        
+        ).encode(
         x=alt.X('DayOfWeek:N', title='Día de la semana', sort=order),
         y=alt.Y(f'{column}:Q', title='Consumo [kWh/día]'),
         color=alt.value('#2d667a'),  # Set the color of the bars
-        opacity=alt.value(1),  # Set the opacity of the bars
+        opacity=alt.value(0.9),  # Set the opacity of the bars
         tooltip=[alt.Tooltip('DayOfWeek:N', title='Día de la semana')]  # Customize the tooltip
     )
 
