@@ -68,7 +68,7 @@ else:
 
     # filter the base_load_df to just get the date range selected
     base_load_df = range_selector(base_load_df, min_date=session_state.min_date, max_date=session_state.max_date)
-    
+
     # filter the base_load_df to just get the days of the week selected
     if session_state.days:
         base_load_df = base_load_df[base_load_df['fecha'].dt.dayofweek.isin(session_state.days)]
@@ -95,8 +95,6 @@ else:
 
     # calculate a new column cost that is the product of the column selected and the cost of energy
     base_load_df['cost'] = base_load_df[meter_select] * cost
-    # save the base_load_df to the ../base_load_df.xlsx
-    base_load_df.to_excel('./base_load_df.xlsx', index=False)
     # get the total cost on the date range selected
     total_cost = base_load_df['cost'].sum()
     total_kwh = base_load_df[meter_select].sum()
