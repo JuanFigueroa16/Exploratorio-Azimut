@@ -355,11 +355,16 @@ def get_ener_data(df, organization_id, start_date, end_date):
     return df
 
 def range_selector(data, min_date, max_date):
+
     # Filter data between min_date and max_date
     min_date = pd.to_datetime(min_date)
 
     # convert max_date to datetime
     max_date = pd.to_datetime(max_date)
 
-    data = data[(data['fecha'] >= min_date) & (data['fecha'] <= max_date)]
+    # need to add a day to max_date to include all the hours of the last day then remove the last row 
+    data = data[(data['fecha'] >= min_date) & (data['fecha'] <= max_date+pd.Timedelta(days=1))]
+    # remove last row
+    data = data[:-1]
+
     return data

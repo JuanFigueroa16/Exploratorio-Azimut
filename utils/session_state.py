@@ -30,6 +30,10 @@ def get_session_state():
         session_state.cost = 600
     if 'days' not in session_state:
         session_state.days = []  # All days
+    if 'min_value' not in session_state:
+        session_state.min_value = None
+    if 'max_value' not in session_state:
+        session_state.max_value = None
         
     return session_state
 
