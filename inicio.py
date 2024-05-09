@@ -21,8 +21,6 @@ def get_organization_id(organization_select, organizations):
 def get_inmuebles(organization_id):
     t_medidores = obtener_t_medidores()
     t_medidores = t_medidores[t_medidores['ID Cliente'] == organization_id]
-    # save t_medidores to excel
-    t_medidores.to_excel('t_medidores.xlsx', index=False)
 
     with st.spinner("Cargando inmuebles de la organización..."):
         organization_data = get_organization_data(organization_id)
