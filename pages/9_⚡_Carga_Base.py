@@ -3,7 +3,7 @@ import time
 import numpy as np
 
 from utils.ETL import *
-from utils.plots import *
+from utils.plots.Carga_Base import *
 from utils.session_state import *
 
 # filter by location_id session_state.meters_location by location_id
@@ -100,5 +100,5 @@ else:
     total_kwh = base_load_df[meter_select].sum()
 
     # show to user the base load
-    st.write(f"## Costo total carga base: ${total_cost:,.2f}")
-    st.write(f"## Consumo total carga base [kWh]: {total_kwh:,.2f} kWh")
+    st.write(f"###  Costo total carga base: ${total_cost:,.2f}")
+    st.write(f"###  Consumo total carga base [kWh]: {total_kwh:,.2f} kWh")
