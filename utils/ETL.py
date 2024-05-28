@@ -206,9 +206,16 @@ def conocer_id_inmuebles(consulta): #funcion que imprime la lista de inmuebles d
 
 def get_meters_names(parent_id, descendants):
     conn = get_connection()
-
+    if parent_id not in descendants:
+        # Handle the case where there are no descendants for the given parent_id
+        print('No descendants found for parent_id:', parent_id)
+        print('descendants:', descendants)
+        return 0  # Or any other appropriate action
+    print('parent_id', parent_id)
+    print('descendant', descendants)
     # Convert list to comma-separated string
     descendant_ids = ', '.join(map(str, descendants[parent_id]))
+    print('descendant_ids', descendant_ids)
     if len(descendant_ids) == 0:
         descendant_ids = 'NULL'
         query = f"""
@@ -368,3 +375,58 @@ def range_selector(data, min_date, max_date):
     data = data[:-1]
 
     return data
+
+# get available variables
+def get_available_variables(organization_id):
+    conn = get_connection()
+    query = f"""
+    SELECT DISTINCT hh.event_code
+    FROM usage_management.history_hourly hh
+    JOIN usage_management.meters m ON hh.meter_id = m.id
+    WHERE m.organization_id = {organization_id};
+    """
+    df = pd.read_sql(query, conn)
+    conn.close()
+    return df
+
+def get_data(df, organization_id, start_date, end_date, event_code):
+    conn = get_connection()
+
+    query = """
+    SELECT
+      hh.date AS Fecha,"""
+    
+    # Generate SUM(CASE...) expressions for each meter
+    for index, row in df.iterrows():
+        query += f"""
+      SUM(CASE WHEN m.id = '{row['meter_id']}' THEN hh.value END) AS "{row['meter_name']}", """
+
+    query = query.rstrip(', ')  # Remove trailing comma
+    query += f"""
+    FROM
+        usage_management.history_hourly hh
+    INNER JOIN
+        usage_management.meters m ON hh.meter_id = m.id
+    WHERE
+        hh.date BETWEEN '{start_date}' AND '{end_date}'
+        AND m.organization_id = {organization_id}
+        AND m.id IN ("""
+    
+    # Add meter IDs to the IN clause
+    meter_ids = "', '".join(df['meter_id'])
+    query += f"'{meter_ids}')"
+    
+    query += f"""
+        AND hh.event_code = '{event_code}'
+    GROUP BY
+        hh.date
+    ORDER BY
+        hh.date
+    """
+
+    df = pd.read_sql(query, conn)
+    conn.close()
+    return df
+
+# parent_id 4144
+# descendant {4171: [], 4170: [], 4173: [], 4166: [], 4168: [], 4164: [], 4163: [], 4162: [], 4167: [], 4157: [], 4139: [], 4169: [], 4159: [], 4172: [], 4152: [], 4161: [], 4144: [], 4140: [], 4175: [], 21153: [4138, 21150], 21151: [4147], 21152: [4137], 4174: [], 4165: [], 7303: [4145, 4198, 4136, 4197, 4304, 4305], 7308: [4143, 20500, 7317], 7304: [4151, 4150, 20496, 4155, 4154, 20497, 4156, 20499, 4148, 20504, 4146, 4141, 7253, 21874, 21875, 7254, 4153, 4158, 20502, 7309, 7313, 7310, 7311, 7312, 4160], 7307: [4135, 20501, 7316], 7305: [4142, 20498, 7314], 7306: [7315, 4149, 20503], 21417: []}

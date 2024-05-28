@@ -1,6 +1,4 @@
 import streamlit as st
-import time
-import numpy as np
 
 from utils.ETL import *
 from utils.plots.Matriz_Horaria_Consumos import *

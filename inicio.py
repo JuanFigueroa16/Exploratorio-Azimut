@@ -1,4 +1,3 @@
-from urllib.error import URLError
 import streamlit as st
 from utils.ETL import * # Load all the Extract, Transform, Load functions
 from utils.session_state import *

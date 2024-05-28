@@ -1,5 +1,4 @@
 import streamlit as st
-import datetime
 
 # Define a function to get or create SessionState
 def get_session_state():
